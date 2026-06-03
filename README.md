@@ -1,1 +1,1 @@
-Full Ecommerce website using Django
+Full Stack Ecommerce Website
