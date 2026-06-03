@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<section class="section-content padding-y bg">
+<div class="container">
+
+<div class="row">
+    <!-- Left Column: The Enquiry Form -->
+    <main class="col-md-7">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title mb-4">Send an Enquiry</h4>
+                <form action="{% url 'enquiry' %}" method="POST">
+                    {% csrf_token %}
+                    <div class="form-row">
+                        <div class="col form-group">
+                            <label>Full Name</label>
+                            <input type="text" name="name" class="form-control" required value="{{ request.user.get_full_name }}">
+                        </div>
+                        <div class="col form-group">
+                            <label>Email Address</label>
+                            <input type="email" name="email" class="form-control" required value="{{ request.user.email }}">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Your Message / Question</label>
+                        <textarea name="message" class="form-control" rows="5" placeholder="Ask details about stock, shipping, or custom pricing..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-info btn-block">Submit Enquiry</button>
+                    <a href="{% url 'cart' %}" class="btn btn-light btn-block">Back to Cart</a>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <!-- Right Column: Summary of Cart Items they are asking about -->
+    <aside class="col-md-5">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Enquiring About These Items</h5>
+                <hr>
+                {% for cart_item in cart_items %}
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <p class="mb-0 font-weight-bold">{{ cart_item.product.product_name }}</p>
+                        <small class="text-muted">
+                            Qty: {{ cart_item.quantity }} 
+                            {% if cart_item.variations.all %}
+                                | {% for item in cart_item.variations.all %}{{ item.variation_value }} {% endfor %}
+                            {% endif %}
+                        </small>
+                    </div>
+                    <span class="text-muted">${{ cart_item.product.price }}</span>
+                </div>
+                {% empty %}
+                <p class="text-muted">Your cart is currently empty.</p>
+                {% endfor %}
+                <hr>
+                <div class="d-flex justify-content-between">
+                    <strong>Estimated Total:</strong>
+                    <strong>${{ grand_total }}</strong>
+                </div>
+            </div>
+    
+        </div>
+    </aside>
+</div>
+
+</div>
+</section>
+{% endblock %}
