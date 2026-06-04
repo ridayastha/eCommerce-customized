@@ -13,6 +13,10 @@
         <form action="{% url 'register' %}" method="POST">
             {% csrf_token %}
 
+            {% if request.GET.next %}
+                <input type="hidden" name="next" value="{{ request.GET.next }}">
+            {% endif %}
+
             <div class="form-row">
                 <div class="col form-group">
                     <label for="{{ form.first_name.id_for_label }}">First name</label>
@@ -55,7 +59,7 @@
         </form>
     </article><!-- card-body.// -->
 </div> <!-- card .// -->
-<p class="text-center mt-4">Have an account? <a href="{% url 'login' %}">Log In</a></p>
+<p class="text-center mt-4">Have an account?<a href="{% url 'login' %}{% if request.GET.next %}?next={{ request.GET.next }}{% endif %}">Log In</a></p>
 <br><br>
 <!-- ============================ COMPONENT REGISTER  END.// ================================= -->
 

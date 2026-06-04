@@ -17,7 +17,10 @@ from carts.models import Cart, CartItem
 
 def register(request):
     if request.user.is_authenticated:
-        return redirect('dashboard')
+        next_url = request.POST.get('next', request.GET.get('next', 'dashboard'))
+        return redirect(next_url)
+    
+    next_destination = request.POST.get('next', request.GET.get('next', ''))
 
     if request.method == 'POST':
         form = RegistrationForm(request.POST)
@@ -55,7 +58,8 @@ def register(request):
                 messages.success(request,f'Registration successful. Please check your email ({email}) to activate your account.')
             except Exception:
                 messages.error(request, 'Account created, but we failed to send the activation email. Please contact support.')
-
+            if next_destination:
+                return redirect(f"{reverse('login')}?next={next_destination}")
             return redirect('login')
     else:
         form = RegistrationForm()
@@ -65,7 +69,8 @@ def register(request):
 def login(request):
     # 1. Prevent logged-in users from seeing the login page again
     if request.user.is_authenticated:
-        return redirect('dashboard')
+        next_url = request.POST.get('next', request.GET.get('next', 'dashboard'))
+        return redirect(next_url)
 
     if request.method == 'POST':
         email = request.POST.get('email')
@@ -125,7 +130,7 @@ def login(request):
                 messages.success(request, 'You are now logged in.')
 
                 # Handle 'next' parameter (useful for redirected checkouts)
-                next_url = request.GET.get('next', 'dashboard')
+                next_url = request.POST.get('next', request.GET.get('next', 'dashboard'))
                 return redirect(next_url)
 
             else:

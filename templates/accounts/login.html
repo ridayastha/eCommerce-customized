@@ -10,6 +10,9 @@
 
             <form action="{% url 'login' %}" method="POST">
                 {% csrf_token %}
+                {% if request.GET.next %}
+                   <input type="hidden" name="next" value="{{ request.GET.next }}">
+                {% endif %}
                 <div class="form-group">
                     <input type="email" class="form-control" placeholder="Email Address" name="email" required>
                 </div>
@@ -25,6 +28,6 @@
             </form>
         </div>
     </div>
-    <p class="text-center mt-4">Don't have an account? <a href="{% url 'register' %}">Sign up</a></p>
+    <p class="text-center mt-4">Don't have an account? <a href="{% url 'register' %}{% if request.GET.next %}?next={{ request.GET.next }}{% endif %}">Sign up</a></p>
 </section>
 {% endblock %}
