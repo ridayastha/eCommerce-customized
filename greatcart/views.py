@@ -11,8 +11,8 @@ def home(request):
 
     # 3. Highest Rated (Calculated by average review score)
     highest_rated = Product.objects.filter(is_available=True).annotate(
-        averageReview=Avg('reviewrating__rating')
-    ).order_by('-averageReview')[:4]
+        db_rating=Avg('reviewrating__rating')
+    ).order_by('-db_rating')[:4]
 
     # 4. Recommended (Based on products with the most reviews)
     recommended = Product.objects.filter(is_available=True).annotate(
