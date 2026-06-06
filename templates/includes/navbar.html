@@ -1,94 +1,123 @@
 {% load static %}
 
-<!-- <div class="container-fluid text-center d-flex flex-wrap justify-content-center align-items-center gap-3 py-2 bg-dark">
-  
-  <span class="text-white text-uppercase letter-spacing small" style="letter-spacing: 1px;">
+<div class="container-fluid text-center d-flex flex-wrap justify-content-center align-items-center gap-3 py-2 bg-dark">
+  <span class="text-white text-uppercase small" style="letter-spacing: 1px; font-size: 0.85rem;">
     Get 20% OFF on Your First Order!
   </span>
-
- <a href="{% url 'store' %}" class="btn btn-outline-light fs-5 ml-4">
-    <i class="fas fa-store me-1"></i> Store
+  <a href="{% url 'store' %}" class="btn btn-sm btn-outline-light ml-3 px-3" style="font-size: 0.8rem;">
+    <i class="fas fa-shopping-bag mr-1"></i> Shop Now
   </a>
-</div> -->
+</div>
 
+<header class="section-header bg-white shadow-sm">
+  <section class="header-main border-bottom py-3">
+    <div class="container">
+      <div class="row align-items-center">
+        
+        <div class="col-lg-2 col-md-3 col-6">
+          <a href="{% url 'home' %}" class="brand-wrap">
+            <img class="logo" src="{% static './images/supriya.jpeg' %}" style="height: 65px; max-height: 65px; object-fit: contain;">
+          </a>
+        </div>
 
+        <div class="col-lg-6 col-md-6 col-sm-12 col-12 order-3 order-lg-2 mt-3 mt-lg-0">
+          <form action="{% url 'search' %}" class="search" method="GET">
+            <div class="input-group w-100 border overflow-hidden bg-light" style="border-color: #dee2e6 !important;">
+              <input type="text" class="form-control border-0 bg-transparent px-4" placeholder="Search premium items, brands, trends..." name="keyword" required style="box-shadow: none;">
+              <div class="input-group-append">
+                <button class="btn btn-dark text-light px-4 border-0 rounded-0" type="submit">
+                  <i class="fa fa-search"></i>
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
 
+        <div class="col-lg-4 col-md-3 col-6 order-2 order-lg-3">
+          <div class="d-flex justify-content-end align-items-center">
+            
+            {% if user.id is None %}
+            <div class="widget-header text-right mr-3 small">
+              <span class="text-muted d-block" style="font-size: 0.75rem;">Welcome Guest</span>
+              <div>
+                <a href="{% url 'login' %}" class="font-weight-bold text-dark text-decoration-none">Sign In</a> 
+                <span class="text-muted px-1">|</span>
+                <a href="{% url 'register' %}" class="text-muted text-decoration-none">Register</a>
+              </div>
+            </div>
+            {% else %}
+            <div class="widget-header text-right mr-3 small">
+              <span class="text-muted d-block" style="font-size: 0.75rem;">Welcome, {{ user.first_name }}!</span>
+              <div>
+                <a href="{% url 'dashboard' %}" class="font-weight-bold text-dark text-decoration-none">Dashboard</a> 
+                <span class="text-muted px-1">|</span>
+                <a href="{% url 'logout' %}" class="text-danger text-decoration-none">Logout</a>
+              </div>
+            </div>
+            {% endif %}
 
+            <a href="{% url 'store' %}" class="icon-wrap border rounded-circle text-dark d-inline-flex align-items-center justify-content-center mr-3 position-relative" style="width: 42px; height: 42px; transition: all 0.2s;" title="Browse Store">
+              <i class="fas fa-store" style="font-size: 1.1rem;"></i>
+            </a>
 
-<header class="section-header">
+            <a href="{% url 'cart' %}" class="icon-wrap border rounded-circle text-dark d-inline-flex align-items-center justify-content-center position-relative" style="width: 42px; height: 42px; transition: all 0.2s; background-color: #f8f9fa;">
+              <i class="fa fa-shopping-cart" style="font-size: 1.1rem;"></i>
+              <span class="badge badge-pill badge-danger position-absolute" style="top: -6px; right: -6px; font-size: 0.7rem; min-width: 18px; height: 18px; display: flex; align-items: center; justify-content: center;">{{ cart_count }}</span>
+            </a>
 
-<section class="header-main border-bottom">
-  <div class="container">
-<div class="row align-items-center">
-  <div class="col-lg-2 col-md-3 col-6">
-    <a href="{% url 'home' %}" class="brand-wrap">
-      <img class="logo" src="{% static './images/supriya.jpeg' %}" style="height: 80px; max-height: 80px; object-fit: contain;">
-    </a> <!-- brand-wrap.// -->
-  </div>
-  <div class="col-lg col-sm col-md col-6 flex-grow-2">
-    <div class="category-wrap dropdown d-inline-block float-right">
-      <button type="button" class="btn btn-dark dropdown-toggle" data-toggle="dropdown">
-        <i class="fa fa-bars"></i> All category
-      </button>
-      <div class="dropdown-menu text-center">
-        <a class="dropdown-item" href="{% url 'store' %}">All Products </a>
-        {% for category in links %}
-          <a class="dropdown-item" href="{{ category.get_url }}">{{ category.category_name }} </a>
-        {% endfor %}
-      </div>
-    </div>  <!-- category-wrap.// -->
-  </div> <!-- col.// -->
-
-  <div class="col-lg  col-md-6 col-sm-12 col">
-    <form action="{% url 'search' %}" class="search" method='GET'>
-      <div class="input-group w-100">
-          <input type="text" class="form-control" placeholder="Search products..." name="keyword" required>
-
-          <div class="input-group-append">
-            <button class="btn btn-dark" type="submit">
-              <i class="fa fa-search"></i>
-            </button>
           </div>
         </div>
-    </form> <!-- search-wrap .end// -->
-  </div> <!-- col.// -->
-  <div class="col-lg-3 col-sm-6 col-8 order-2 order-lg-3">
-        <div class="d-flex justify-content-end mt-2 mb-2 mb-lg-0">
-          {% if user.id is None %}
-          <div class="widget-header">
-            <small class="title text-muted">Welcome guest!</small>
-            <div>
-              <a href="{% url 'login' %}">Sign in</a> <span class="dark-transp"> | </span>
-              <a href="{% url 'register' %}"> Register</a>
+
+      </div>
+    </div>
+  </section>
+
+  <nav class="navbar navbar-expand-lg navbar-light bg-white py-0 border-bottom">
+    <div class="container">
+      
+      <button class="navbar-toggler my-2" type="button" data-toggle="collapse" data-target="#store_nav" aria-controls="store_nav" aria-expanded="false" aria-label="Toggle Navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="store_nav">
+        <!-- Part A: Dynamic Core Target Demographic Gender Hub Paths -->
+        <ul class="navbar-nav align-items-center">
+          {% for gender in available_genders %}
+            <li class="nav-item">
+              <!-- href passes the slug value ('men', 'unisex'), title filter makes it display beautifully as ('Men', 'Unisex') -->
+              <a class="nav-link font-weight-bold px-3 text-dark text-uppercase small" style="letter-spacing: 0.5px;" href="{% url 'store' %}?gender={{ gender }}">
+                {% if gender == 'unisex' %}Unisex{% else %}{{ gender|title }}{% endif %}
+              </a>
+            </li>
+          {% empty %}
+            <!-- Fallback if there are absolutely no products on the site yet -->
+            <li class="nav-item">
+              <a class="nav-link font-weight-bold px-3 text-muted text-uppercase small" style="letter-spacing: 0.5px;" href="{% url 'store' %}">Shop All</a>
+            </li>
+          {% endfor %}
+          
+          <li class="nav-item border-left ml-2 pl-2 d-none d-lg-block" style="height: 20px; border-color: #dee2e6 !important;"></li>
+        </ul>
+
+        <ul class="navbar-nav ml-auto align-items-center py-2 m-2 py-lg-0">
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle font-weight-bold text-dark text-uppercase small px-3 py-2 border rounded" href="#" id="catDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="background-color: #f8f9fa;">
+              <i class="fa fa-bars mr-1"></i> Browse Categories
+            </a>
+            <div class="dropdown-menu dropdown-menu-right border-0 shadow mt-4 align-items-center" aria-labelledby="catDropdown" style="border-radius: 8px;">
+              <a class="dropdown-item py-2 border-bottom font-weight-bold" href="{% url 'store' %}" style="font-size: 0.85rem;">
+                <i class="fas fa-th-large mr-2 text-muted"></i> All Products
+              </a>
+              {% for category in links %}
+                <a class="dropdown-item py-2" href="{{ category.get_url }}" style="font-size: 0.85rem;">
+                  {{ category.category_name }}
+                </a>
+              {% endfor %}
             </div>
-          </div>
-          {% else %}
-          <div class="widget-header">
-            <small class="title text-muted">Welcome {{user.first_name}}!</small>
-            <div>
-              <a href="{% url 'dashboard' %}">Dashboard</a> <span class="dark-transp"> | </span>
-              <a href="{% url 'logout' %}"> Logout</a>
-            </div>
-          </div>
-          {% endif %}
-          <a href="{% url 'cart' %}" class="widget-header ml-3">
-            <div class="icon icon-sm rounded-circle border"><i class="fa fa-shopping-cart text-dark"></i></div>
-            <span class="badge badge-pill badge-danger notify">{{cart_count}}</span>
-          </a>
+          </li>
+        </ul>
 
-
-        <a href="{% url 'store' %}" class="widget-header ml-3">
-            <div class="icon icon-sm rounded-circle border"><i class="fas fa-store  text-dark"></i> </div>
-        </a>
-
-        </div> <!-- widgets-wrap.// -->
-
-      </div> <!-- col.// -->
-</div> <!-- row.// -->
-  </div> <!-- container.// -->
-</section> <!-- header-main .// -->
-
-
-
-
-</header> <!-- section-header.// -->
+      </div>
+    </div>
+  </nav>
+</header>

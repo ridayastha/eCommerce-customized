@@ -19,6 +19,14 @@ def store(request, category_slug=None):
     else:
         products = Product.objects.filter(is_available=True)
 
+    gender_filter = request.GET.get('gender')
+
+    if gender_filter:
+        if gender_filter == 'unisex':
+            products = products.filter(gender='unisex')
+        
+        elif gender_filter in ['men', 'women', 'kids']:
+            products = products.filter(gender__in=[gender_filter, 'unisex'])
     # Price Filtering logic with safety checks
     min_price = request.GET.get('min_price')
     max_price = request.GET.get('max_price')

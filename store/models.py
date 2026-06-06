@@ -5,6 +5,13 @@ from accounts.models import Account
 from django.db.models import Avg, Count
 
 # Create your models here.
+GENDER_CHOICES = (
+    ('men', 'Men'),
+    ('women', 'Women'),
+    ('kids', 'Kids'),
+    ('unisex', 'Unisex / No Gender'),
+)
+
 class Product(models.Model):
     product_name = models.CharField(max_length=200, unique=True)
     slug = models.SlugField(max_length=200, unique=True)
@@ -14,6 +21,7 @@ class Product(models.Model):
     stock = models.IntegerField()
     is_available = models.BooleanField(default=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    gender = models.CharField(max_length=20, choices=GENDER_CHOICES, default='unisex')
     created_date= models.DateTimeField(auto_now_add=True)
     modified_date= models.DateTimeField(auto_now=True)
 
