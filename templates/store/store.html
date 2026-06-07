@@ -1,156 +1,360 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load store_tags %}
 
 {% block content %}
 <style>
-    /* Sidebar Link Base State */
-    .list-menu li a {
-        display: block;
-        padding: 10px 12px;
-        color: #666;
-        transition: all 0.2s ease;
-        text-decoration: none !important;
-        border-left: 4px solid transparent;
-    }
+  /* Premium E-Commerce Design System Tokens */
+  :root {
+    --mui-surface: #ffffff;
+    --mui-background: #fdfdfd;
+    --mui-text-primary: #111112;
+    --mui-text-secondary: #6e6e73;
+    --mui-primary: #000000;
+    --mui-chip-bg: #f5f5f7;
+    --mui-radius-sm: 10px;
+    --mui-radius-lg: 20px;
+    --transition-smooth: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    --mui-shadow-sm: 0 2px 8px rgba(0,0,0,0.04);
+    --mui-shadow-md: 0 10px 30px rgba(0,0,0,0.06);
+  }
 
-    /* Hover State */
-    .list-menu li a:hover {
-        color: #007bff !important;
-        background-color: #f8f9fa;
-        padding-left: 15px;
-    }
+  body { 
+    background-color: var(--mui-background); 
+    color: var(--mui-text-primary);
+  }
 
-    /* Active Highlight - Border Re-enabled */
-    .list-menu li a.active-filter {
-        color: #212529 !important;
-        font-weight: 700 !important;
-        background-color: #f1f3f5;
-        border-left: 4px solid #212529;
-        padding-left: 15px;
-    }
+  /* Sidebar Sheet Refinement */
+  .filter-sheet { 
+    background: var(--mui-surface); 
+    border-radius: var(--mui-radius-lg); 
+    border: 1px solid rgba(0, 0, 0, 0.03); 
+    box-shadow: var(--mui-shadow-sm);
+    position: sticky;
+    top: 24px;
+  }
+
+  .filter-header { 
+    font-weight: 600; 
+    text-transform: uppercase; 
+    letter-spacing: 0.8px; 
+    font-size: 0.75rem; 
+    color: var(--mui-text-secondary); 
+    margin-bottom: 14px; 
+  }
+
+  /* Interactive Pill Chips */
+  .mui-chip-label { display: inline-block; margin-right: 8px; margin-bottom: 10px; cursor: pointer; }
+  .mui-chip-label input[type="checkbox"], .mui-chip-label input[type="radio"] { 
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  
+  .mui-chip { 
+    display: inline-flex; 
+    align-items: center; 
+    padding: 8px 18px; 
+    background-color: var(--mui-chip-bg); 
+    border-radius: 100px; 
+    font-size: 0.8rem; 
+    font-weight: 500; 
+    color: var(--mui-text-primary); 
+    transition: var(--transition-smooth); 
+    border: 1px solid transparent;
+  }
+  
+  .mui-chip-label input:checked + .mui-chip { 
+    background-color: var(--mui-primary); 
+    color: #ffffff; 
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  }
+  
+  .mui-chip:hover { 
+    background-color: #e8e8ed;
+    transform: translateY(-1px);
+  }
+
+  /* Luxury Minimal Product Cards */
+  .product-card { 
+    background: var(--mui-surface); 
+    border-radius: var(--mui-radius-lg); 
+    border: 1px solid rgba(0, 0, 0, 0.02); 
+    box-shadow: var(--mui-shadow-sm); 
+    transition: var(--transition-smooth);
+    overflow: hidden; 
+  }
+  .product-card:hover { 
+    transform: translateY(-8px); 
+    box-shadow: var(--mui-shadow-md); 
+  }
+
+  .img-container { 
+    position: relative; 
+    width: 100%; 
+    padding-top: 120%; 
+    overflow: hidden; 
+    background: #f5f5f7; 
+  }
+  .img-container img { 
+    position: absolute; 
+    top: 0; left: 0; width: 100%; height: 100%; 
+    object-fit: cover; 
+    transition: transform 0.6s cubic-bezier(0.15, 1, 0.3, 1); 
+  }
+  .product-card:hover .img-container img { 
+    transform: scale(1.05); 
+  }
+
+  /* Styled Price Input Ranges */
+  .mui-input { 
+    border: 1px solid #e5e5ea; 
+    border-radius: var(--mui-radius-sm); 
+    font-size: 0.85rem; 
+    padding: 10px 14px; 
+    transition: var(--transition-smooth); 
+    background: var(--mui-chip-bg);
+  }
+  .mui-input:focus { 
+    border-color: var(--mui-primary); 
+    box-shadow: none; 
+    outline: none; 
+    background: #ffffff; 
+  }
+
+  /* Dropdown Engine Chevron Override Execution */
+  select.mui-input {
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23111112' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e") !important;
+    background-repeat: no-repeat !important;
+    background-position: calc(100% - 14px) center !important;
+    background-size: 12px !important;
+    padding-right: 36px !important;
+  }
+  select.mui-input::-ms-expand {
+    display: none !important;
+  }
+
+  /* Seamless Rounded Pagination */
+  .mui-pagination .page-link {
+    color: var(--mui-text-primary);
+    background: transparent;
+    font-size: 0.9rem;
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition-smooth);
+  }
+  .mui-pagination .page-item.active .page-link {
+    background: var(--mui-primary) !important;
+    color: white !important;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  }
+
+  /* Swatch Color Circle Selection Borders */
+  .color-swatch-circle {
+    width: 24px; 
+    height: 24px; 
+    cursor: pointer; 
+    transition: var(--transition-smooth); 
+    position: relative; 
+    box-shadow: var(--mui-shadow-sm);
+    border: 1.5px solid #e5e5ea !important;
+    display: inline-flex !important;
+  }
+  .color-swatch-circle:hover {
+    transform: scale(1.12);
+    border-color: var(--mui-text-primary) !important;
+  }
+  .color-swatch-wrapper input:checked + .color-swatch-circle {
+    border-color: var(--mui-primary) !important;
+    transform: scale(1.1);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
 </style>
 
-<section class="section-pagetop bg">
-    <div class="container">
-        <h2 class="title-page">{% if 'search' in request.path %}Search Result{% else %}Our Store{% endif %}</h2>
+<section class="section-content padding-y mt-4">
+<div class="container">
+
+  <div class="row align-items-center mb-4">
+    <div class="col-md-6 col-12 text-center text-md-left mb-2 mb-md-0">
+      <span class="text-muted h6 font-weight-normal">Found <strong class="text-dark">"{{ product_count }}"</strong> items</span>
     </div>
-</section>
+    <div class="col-md-6 col-12 d-flex justify-content-md-end justify-content-center align-items-center">
+      <label class="text-muted small font-weight-bold text-uppercase m-0 mr-2" for="sorting_engine">Sort By</label>
+      <select class="mui-input bg-white" id="sorting_engine" onchange="applySorting(this.value)" style="width: 170px !important; min-width: 170px !important;">
+        <option value="" {% if selected_sort == '' %}selected{% endif %}>Default</option>
+        <option value="latest" {% if selected_sort == 'latest' %}selected{% endif %}>Latest Releases</option>
+        <option value="price_low" {% if selected_sort == 'price_low' %}selected{% endif %}>Price: Low to High</option>
+        <option value="price_high" {% if selected_sort == 'price_high' %}selected{% endif %}>Price: High to Low</option>
+      </select>
+    </div>
+  </div>
 
-<section class="section-content padding-y">
-    <div class="container">
-        <div class="row">
-            <aside class="col-md-3">
-                <div class="card">
-                    <article class="filter-group">
-                        <header class="card-header">
-                            <a href="#" data-toggle="collapse" data-target="#collapse_1">
-                                <i class="icon-control fa fa-chevron-down"></i>
-                                <h6 class="title">Categories</h6>
-                            </a>
-                        </header>
-                        <div class="filter-content collapse show" id="collapse_1">
-                            <div class="card-body">
-                                <ul class="list-menu">
-                                    <li>
-                                        <a href="{% url 'store' %}?{% if request.GET.sort %}sort={{ request.GET.sort }}{% endif %}"
-                                           class="{% if not request.resolver_match.kwargs.category_slug and 'search' not in request.path %}active-filter{% endif %}">
-                                            All Products
-                                        </a>
-                                    </li>
-                                    {% for category in links %}
-                                    <li class="mt-2">
-                                        <a href="{{ category.get_url }}?{% if request.GET.sort %}sort={{ request.GET.sort }}{% endif %}"
-                                           class="{% if request.resolver_match.kwargs.category_slug == category.slug %}active-filter{% endif %}">
-                                            {{ category.category_name }}
-                                        </a>
-                                    </li>
-                                    {% endfor %}
-                                </ul>
-                            </div>
-                        </div>
-                    </article>
+  <div class="row">
+    <aside class="col-lg-3 col-md-4 col-12 mb-4">
+      <form id="filter_form" method="GET" action="{% if categories %}{% url 'products_by_category' categories.slug %}{% else %}{% url 'store' %}{% endif %}">
+        
+        <input type="hidden" name="sort" id="hidden_sort_param" value="{{ selected_sort }}">
 
-                    <article class="filter-group">
-                        <header class="card-header">
-                            <a href="#" data-toggle="collapse" data-target="#collapse_3">
-                                <i class="icon-control fa fa-chevron-down"></i>
-                                <h6 class="title">Price Range</h6>
-                            </a>
-                        </header>
-                        <div class="filter-content collapse show" id="collapse_3">
-                            <div class="card-body">
-                                <form action="{% if categories %}{{ categories.get_url }}{% else %}{% url 'store' %}{% endif %}" method="GET">
-                                    {% if request.GET.sort %}<input type="hidden" name="sort" value="{{ request.GET.sort }}">{% endif %}
-                                    <div class="form-row">
-                                        <div class="form-group col-md-6">
-                                            <label>Min</label>
-                                            <input type="number" name="min_price" class="form-control" placeholder="$0" value="{{ request.GET.min_price }}">
-                                        </div>
-                                        <div class="form-group text-right col-md-6">
-                                            <label>Max</label>
-                                            <input type="number" name="max_price" class="form-control" placeholder="$1000" value="{{ request.GET.max_price }}">
-                                        </div>
-                                    </div>
-                                    <button type="submit" class="btn btn-block btn-dark">Apply</button>
-                                    {% if request.GET.min_price or request.GET.max_price %}
-                                        <a href="{% if categories %}{{ categories.get_url }}{% else %}{% url 'store' %}{% endif %}" class="btn btn-block btn-light mt-2">Reset Price</a>
-                                    {% endif %}
-                                </form>
-                            </div>
-                        </div>
-                    </article>
-                </div>
-            </aside>
+        <div class="card filter-sheet p-4">
+          <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
+            <h5 class="font-weight-bold m-0" style="font-size: 1.1rem;">Filters</h5>
+            <a href="{% if categories %}{% url 'products_by_category' categories.slug %}{% else %}{% url 'store' %}{% endif %}" class="small font-weight-bold text-danger text-decoration-none">Clear All</a>
+          </div>
 
-            <main class="col-md-9 mt-4">
-                <header class="border-bottom mb-4 pb-3">
-                    <div class="form-inline">
-                        <span class="mr-md-auto mr-2"><b>{{ product_count }}</b> items found</span>
-                        <select class="form-control mr-2" onchange="location = this.value;">
-                            <option value="?sort=latest{% if request.GET.min_price %}&min_price={{ request.GET.min_price }}{% endif %}{% if request.GET.max_price %}&max_price={{ request.GET.max_price }}{% endif %}" {% if request.GET.sort == 'latest' %}selected{% endif %}>Latest</option>
-                            <option value="?sort=price_low{% if request.GET.min_price %}&min_price={{ request.GET.min_price }}{% endif %}{% if request.GET.max_price %}&max_price={{ request.GET.max_price }}{% endif %}" {% if request.GET.sort == 'price_low' %}selected{% endif %}>Price: Low to High</option>
-                            <option value="?sort=price_high{% if request.GET.min_price %}&min_price={{ request.GET.min_price }}{% endif %}{% if request.GET.max_price %}&max_price={{ request.GET.max_price }}{% endif %}" {% if request.GET.sort == 'price_high' %}selected{% endif %}>Price: High to Low</option>
-                        </select>
-                    </div>
-                </header>
+          <div class="filter-group mb-4">
+            <div class="filter-header">Gender</div>
+            <div class="d-flex flex-wrap">
+              <label class="mui-chip-label">
+                <input type="radio" name="gender" value="" {% if not selected_gender %}checked{% endif %} onchange="triggerFilterForm()">
+                <span class="mui-chip">All</span>
+              </label>
+              <label class="mui-chip-label">
+                <input type="radio" name="gender" value="men" {% if selected_gender == 'men' %}checked{% endif %} onchange="triggerFilterForm()">
+                <span class="mui-chip">Men</span>
+              </label>
+              <label class="mui-chip-label">
+                <input type="radio" name="gender" value="women" {% if selected_gender == 'women' %}checked{% endif %} onchange="triggerFilterForm()">
+                <span class="mui-chip">Women</span>
+              </label>
+              <label class="mui-chip-label">
+                <input type="radio" name="gender" value="kids" {% if selected_gender == 'kids' %}checked{% endif %} onchange="triggerFilterForm()">
+                <span class="mui-chip">Kids</span>
+              </label>
+              <label class="mui-chip-label">
+                <input type="radio" name="gender" value="unisex" {% if selected_gender == 'unisex' %}checked{% endif %} onchange="triggerFilterForm()">
+                <span class="mui-chip">Unisex</span>
+              </label>
+            </div>
+          </div>
 
-                <div class="row">
-                    {% if products %}
-                        {% for product in products %}
-                            {% include 'includes/product_card.html' %}
-                        {% endfor %}
-                    {% else %}
-                        <div class="container text-center mt-5">
-                            <h4>No result found.</h4>
-                        </div>
-                    {% endif %}
-                </div>
+          {% if ui_sizes %}
+          <div class="filter-group mb-4 border-bottom pb-3">
+            <div class="filter-header">Sizes</div>
+            <div class="d-flex flex-wrap">
+              {% for size in ui_sizes %}
+              <label class="mui-chip-label">
+                <input type="checkbox" name="size" value="{{ size }}" {% if size in selected_sizes %}checked{% endif %} onchange="triggerFilterForm()">
+                <span class="mui-chip">{{ size }}</span>
+              </label>
+              {% endfor %}
+            </div>
+          </div>
+          {% endif %}
 
-                <nav class="mt-4" aria-label="Page navigation">
-                    {% if products.has_other_pages %}
-                    <ul class="pagination justify-content-center">
-                        {% if products.has_previous %}
-                        <li class="page-item">
-                            <a class="page-link" href="?page={{ products.previous_page_number }}{% if request.GET.min_price %}&min_price={{ request.GET.min_price }}{% endif %}{% if request.GET.max_price %}&max_price={{ request.GET.max_price }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">&laquo;</a>
-                        </li>
-                        {% endif %}
+          {% if ui_colors %}
+          <div class="filter-group pb-4">
+            <div class="filter-header">Colors</div>
+            <div class="d-flex flex-wrap align-items-center" style="gap: 12px;">
+              {% for color in ui_colors %}
+              <div class="color-swatch-wrapper" style="position: relative; display: inline-block; width: 24px; height: 24px;">
+                <input type="checkbox" 
+                       name="color" 
+                       value="{{ color }}" 
+                       id="color_{{ forloop.counter }}"
+                       style="position: absolute; opacity: 0; width: 0; height: 0;"
+                       {% if color in selected_colors %}checked{% endif %} 
+                       onchange="triggerFilterForm()">
+                
+                <label for="color_{{ forloop.counter }}" 
+                       class="rounded-circle color-swatch-circle align-items-center justify-content-center m-0" 
+                       title="{{ color|title }}" 
+                       style="background-color: {{ color|slice:'0:15'|lower }}; display: flex !important;">
+                  
+                  {% if color in selected_colors %}
+                    <span class="rounded-circle bg-white shadow-sm" style="width: 8px; height: 8px; display: block;"></span>
+                  {% endif %}
+                </label>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+          {% endif %}
 
-                        {% for i in products.paginator.page_range %}
-                            <li class="page-item {% if products.number == i %}active{% endif %}">
-                                <a class="page-link" href="?page={{ i }}{% if request.GET.min_price %}&min_price={{ request.GET.min_price }}{% endif %}{% if request.GET.max_price %}&max_price={{ request.GET.max_price }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">{{ i }}</a>
-                            </li>
-                        {% endfor %}
+          <div class="filter-group pt-3">
+            <div class="filter-header">Price Range ($)</div>
+            <div class="form-row">
+              <div class="form-group col-6 mb-2">
+                <input type="number" class="form-control mui-input w-100" name="min_price" placeholder="Min" value="{{ selected_min_price }}">
+              </div>
+              <div class="form-group col-6 mb-2">
+                <input type="number" class="form-control mui-input w-100" name="max_price" placeholder="Max" value="{{ selected_max_price }}">
+              </div>
+            </div>
+            <button class="btn btn-dark btn-block mt-2 rounded-pill font-weight-bold btn-sm py-2 shadow-sm" type="submit" style="letter-spacing: 0.5px; width: 100%;">Apply Price</button>
+          </div>
 
-                        {% if products.has_next %}
-                        <li class="page-item">
-                            <a class="page-link" href="?page={{ products.next_page_number }}{% if request.GET.min_price %}&min_price={{ request.GET.min_price }}{% endif %}{% if request.GET.max_price %}&max_price={{ request.GET.max_price }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">&raquo;</a>
-                        </li>
-                        {% endif %}
-                    </ul>
-                    {% endif %}
-                </nav>
-            </main>
         </div>
-    </div>
+      </form>
+    </aside>
+
+    <main class="col-lg-9 col-md-8 col-12" style="position: relative;">
+      
+      <div id="loading_overlay" style="display: none; position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(255,255,255,0.7); z-index: 20; backdrop-filter: blur(3px); border-radius: var(--mui-radius-lg);">
+        <div class="d-flex justify-content-center align-items-center" style="min-height: 400px; height: 100%;">
+           <div class="spinner-border text-dark" role="status"></div>
+        </div>
+      </div>
+
+      <div class="row">
+        {% for product in products %}
+        <div class="col-lg-4 col-sm-6 col-12 mb-4 d-flex align-items-stretch">
+          {% include 'includes/product_card.html' %}
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+          <div class="p-5 bg-white rounded shadow-sm text-muted">
+            <i class="fas fa-box-open fa-3x mb-3 text-secondary"></i>
+            <h5 class="font-weight-bold text-dark">No matching inventory items found.</h5>
+            <p class="small m-0">Try changing or clearing your active variation filters.</p>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+      {% if products.has_other_pages %}
+      <nav class="mt-4 d-flex justify-content-center">
+        <ul class="pagination pagination-sm mui-pagination">
+          {% if products.has_previous %}
+            <li class="page-item"><a class="page-link border-0 text-dark mx-1 rounded-circle" href="?{% url_replace 'page' products.previous_page_number %}"><i class="fa fa-chevron-left"></i></a></li>
+          {% endif %}
+          
+          {% for i in products.paginator.page_range %}
+            {% if products.number == i %}
+              <li class="page-item active"><span class="page-link border-0 bg-dark text-white mx-1 rounded-circle font-weight-bold" style="width:34px; height:34px; display:flex; align-items:center; justify-content:center;">{{ i }}</span></li>
+            {% else %}
+              <li class="page-item"><a class="page-link border-0 text-dark mx-1 rounded-circle" style="width:34px; height:34px; display:flex; align-items:center; justify-content:center;" href="?{% url_replace 'page' i %}">{{ i }}</a></li>
+            {% endif %}
+          {% endfor %}
+
+          {% if products.has_next %}
+            <li class="page-item"><a class="page-link border-0 text-dark mx-1 rounded-circle" href="?{% url_replace 'page' products.next_page_number %}"><i class="fa fa-chevron-right"></i></a></li>
+          {% endif %}
+        </ul>
+      </nav>
+      {% endif %}
+    </main>
+  </div>
+
+</div>
 </section>
+
+<script>
+  function triggerFilterForm() {
+      const overlay = document.getElementById('loading_overlay');
+      if (overlay) overlay.style.display = 'block';
+      document.getElementById('filter_form').submit();
+  }
+
+  function applySorting(sortVal) {
+      document.getElementById('hidden_sort_param').value = sortVal;
+      triggerFilterForm();
+  }
+</script>
 {% endblock %}

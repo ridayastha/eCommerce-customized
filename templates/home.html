@@ -3,7 +3,7 @@
 
 {% block content %}
 <style>
-    /* UI Enhancements */
+    /* UI Layout Frame Enhancements */
     .hero-banner {
         background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url("{% static 'images/banners/colorfulbanner.gif' %}");
         background-size: cover;
@@ -20,24 +20,82 @@
     .btn-hero { background-color: #fff; color: #000; font-weight: 700; padding: 15px 30px; transition: 0.3s; border: none; }
     .btn-hero:hover { transform: scale(1.05); background-color: #f8f9fb; }
 
-    /* Telemetry Header Component */
     .telemetry-header {
         border-left: 5px solid;
         padding-left: 1rem;
         min-height: 50px;
     }
 
-    .img-wrap img {
-    width: 100%;
-    height: 200px; /* Fixed height */
-    object-fit: contain; /* Keeps image proportions without cropping */
-}
-
     .section-spacer { padding: 20px 0; }
+
+    /* --- CAROUSEL LOCOMOTION ENGINE STRUCTURE --- */
+    .carousel-container { position: relative; width: 100%; }
+    
+    .carousel-row {
+        display: flex;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        overflow-y: hidden;
+        scroll-behavior: smooth;
+        -webkit-overflow-scrolling: touch;
+        scroll-snap-type: x mandatory;
+        padding-bottom: 15px;
+    }
+
+    /* Clear Default Browser Scrollbars */
+    .carousel-row::-webkit-scrollbar { display: none; }
+    .carousel-row { -ms-overflow-style: none; scrollbar-width: none; }
+
+    .carousel-item-box {
+        flex: 0 0 100%;
+        max-width: 100%;
+        scroll-snap-align: start;
+        padding: 0 10px;
+    }
+
+    /* Responsive Grid Breakpoints */
+    @media (min-width: 576px) { .carousel-item-box { flex: 0 0 50%; max-width: 50%; } }
+    @media (min-width: 768px) { .carousel-item-box { flex: 0 0 33.333%; max-width: 33.333%; } }
+    @media (min-width: 992px) { .carousel-item-box { flex: 0 0 25%; max-width: 25%; } }
+
+    /* Controls */
+    .btn-nav-arrow {
+        border-radius: 50%;
+        width: 34px;
+        height: 34px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #f8f9fa;
+        color: #212529;
+        border: 1px solid #dee2e6;
+        transition: all 0.2s ease;
+        cursor: pointer;
+    }
+    .btn-nav-arrow:hover {
+        background-color: #212529;
+        color: #fff;
+        border-color: #212529;
+    }
+    .btn-nav-arrow:focus { outline: none; }
+
+    /* --- TESTIMONIAL CARDS --- */
+    .testimonial-card {
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        padding: 24px;
+        background: #fff;
+        width: 100%;
+    }
+    .verified-badge {
+        color: #007bff;
+        font-size: 0.75rem;
+    }
 </style>
 
 <div class="container mt-4">
 
+    <!-- HERO GRID BANNER -->
     <section class="hero-banner shadow-sm">
         <div class="hero-content">
             <span class="badge badge-warning rounded-0 mb-3 px-3 py-2 text-uppercase font-weight-bold">Get 20% OFF</span>
@@ -47,71 +105,179 @@
         </div>
     </section>
 
-<section class="section-spacer">
+    <!-- SECTION 1: NEW ARRIVALS -->
+    <section class="section-spacer">
         <header class="d-flex justify-content-between align-items-center mb-4 telemetry-header border-danger">
             <div>
                 <small class="text-uppercase text-muted font-weight-bold telemetry-label d-block"># Stay ahead of the trend</small>
                 <h3 class="text-uppercase font-weight-bold m-0 h6">New Arrivals</h3>
             </div>
-            <a href="{% url 'store' %}" class="btn btn-light btn-sm px-3 rounded font-weight-bold text-uppercase" style="font-size: 0.7rem;">See all</a>
-        </header>
-        <div class="row">
-            {% for product in latest_products %}
-                {% include 'includes/product_card.html' %}
-            {% endfor %}
-        </div>
-    </section>
-
-<section class="section-spacer">
-        <header class="d-flex justify-content-between align-items-center mb-4 telemetry-header border-success">
-            <div>
-                <small class="text-uppercase text-muted font-weight-bold telemetry-label d-block"># Hot Picks for You</small>
-                <h3 class="text-uppercase font-weight-bold m-0 h6">Recommended</h3>
+            <div class="d-flex" style="gap: 8px;">
+                <button class="btn-nav-arrow mr-1" onclick="scrollCarousel('new-arrivals', 'left')"><i class="fa fa-chevron-left"></i></button>
+                <button class="btn-nav-arrow" onclick="scrollCarousel('new-arrivals', 'right')"><i class="fa fa-chevron-right"></i></button>
             </div>
-            <a href="{% url 'store' %}" class="btn btn-light btn-sm px-3 rounded font-weight-bold text-uppercase" style="font-size: 0.7rem;">See all</a>
         </header>
-        <div class="row">
-            {% for product in recommended %}
-                {% include 'includes/product_card.html' %}
-            {% endfor %}
+        <div class="carousel-container">
+            <div class="carousel-row" id="new-arrivals">
+                {% for product in latest_products %}
+                    <div class="carousel-item-box d-flex align-items-stretch">
+                        {% include 'includes/product_card.html' %}
+                    </div>
+                {% endfor %}
+            </div>
         </div>
     </section>
 
-<section class="section-spacer">
+    <!-- SECTION 3: TOP RATED -->
+    <section class="section-spacer">
         <header class="d-flex justify-content-between align-items-center mb-4 telemetry-header border-warning">
             <div>
-                <small class="text-uppercase text-muted font-weight-bold telemetry-label d-block"># Most Loved Products</small>
+                <small class="text-uppercase text-muted font-weight-bold telemetry-label d-block"># Highest Rated Reviews</small>
                 <h3 class="text-uppercase font-weight-bold m-0 h6">Top Rated</h3>
             </div>
-            <a href="{% url 'store' %}" class="btn btn-light btn-sm px-3 rounded font-weight-bold text-uppercase" style="font-size: 0.7rem;">See all</a>
+            <div class="d-flex" style="gap: 8px;">
+                <button class="btn-nav-arrow mr-1" onclick="scrollCarousel('top-rated', 'left')"><i class="fa fa-chevron-left"></i></button>
+                <button class="btn-nav-arrow" onclick="scrollCarousel('top-rated', 'right')"><i class="fa fa-chevron-right"></i></button>
+            </div>
         </header>
-        <div class="row">
-            {% for product in highest_rated %}
-                {% include 'includes/product_card.html' %}
-            {% endfor %}
+        <div class="carousel-container">
+            <div class="carousel-row" id="top-rated">
+                {% for product in highest_rated %}
+                    <div class="carousel-item-box d-flex align-items-stretch">
+                        {% include 'includes/product_card.html' %}
+                    </div>
+                {% endfor %}
+            </div>
         </div>
     </section>
 
+    <!-- SECTION 4: EXPLORE -->
     <section class="section-spacer mb-5">
         <header class="d-flex justify-content-between align-items-center mb-4 telemetry-header border-dark">
             <div>
-                <small class="text-uppercase text-muted font-weight-bold telemetry-label d-block"># Fresh picks every time</small>
+                <small class="text-uppercase text-muted font-weight-bold telemetry-label d-block"># Fresh Shuffled Picks</small>
                 <h3 class="text-uppercase font-weight-bold m-0 h6">Explore</h3>
             </div>
             <a href="{% url 'store' %}" class="btn btn-light btn-sm px-3 rounded font-weight-bold text-uppercase" style="font-size: 0.7rem;">See all</a>
         </header>
         <div class="row">
             {% for product in random_products %}
-                {% include 'includes/product_card.html' %}
+                <div class="col-lg-3 col-md-4 col-sm-6 mb-4 d-flex align-items-stretch">
+                    {% include 'includes/product_card.html' %}
+                </div>
             {% endfor %}
         </div>
     </section>
 
+    <!-- TESTIMONIAL FEEDBACK GRID -->
+    <section class="section-spacer my-4">
+        <header class="text-center mb-5">
+            <small class="text-uppercase telemetry-label d-block mb-1"># Global Network Trust</small>
+            <h3 class="font-weight-bold" style="font-size: 2rem; letter-spacing: -0.8px;">Verified Partner Feedback</h3>
+        </header>
 
+        <div class="row g-4">
+            <!-- Testimonial 1 -->
+            <div class="col-lg-4 col-md-6 col-12 mb-4 d-flex align-items-stretch">
+                <div class="testimonial-card d-flex flex-column justify-content-between">
+                    <div>
+                        <div class="text-warning mb-3 small">
+                            <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i>
+                        </div>
+                        <h5 class="h6 font-weight-bold text-dark mb-2">"Exceptional Bulk Fulfillment"</h5>
+                        <p class="text-muted font-weight-normal small" style="line-height: 1.6;">Our multi-store retail chain integrated their logistics pipeline seamlessly. Item conditions arrive flawless every quarter. Highly recommend corporate procurement layout.</p>
+                    </div>
+                    <div class="d-flex align-items-center mt-4 border-top pt-3">
+                        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" alt="Sarah Jenkins" class="rounded-circle mr-3" style="width: 50px; height: 50px; object-fit: cover; flex-shrink: 0;">
+                        <div>
+                            <div class="font-weight-bold small d-flex align-items-center">Sarah Jenkins <span class="ml-2 verified-badge"><i class="fa fa-check-circle"></i> Corporate</span></div>
+                            <small class="text-muted d-block" style="font-size: 0.72rem;">Senior Procurement, Nexus Retail</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
+            <!-- Testimonial 2 -->
+            <div class="col-lg-4 col-md-6 col-12 mb-4 d-flex align-items-stretch">
+                <div class="testimonial-card d-flex flex-column justify-content-between">
+                    <div>
+                        <div class="text-warning mb-3 small">
+                            <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i>
+                        </div>
+                        <h5 class="h6 font-weight-bold text-dark mb-2">"Next-Gen Inventory Control"</h5>
+                        <p class="text-muted font-weight-normal small" style="line-height: 1.6;">The variation filters matching real-time stock levels solved sorting distribution mistakes over our system architecture warehouses instantly. Unmatched execution speed.</p>
+                    </div>
+                    <div class="d-flex align-items-center mt-4 border-top pt-3">
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80" alt="Marcus Vance" class="rounded-circle mr-3" style="width: 50px; height: 50px; object-fit: cover; flex-shrink: 0;">
+                        <div>
+                            <div class="font-weight-bold small d-flex align-items-center">Marcus Vance <span class="ml-2 verified-badge"><i class="fa fa-check-circle"></i> Enterprise</span></div>
+                            <small class="text-muted d-block" style="font-size: 0.72rem;">Operations Director, V-Line Logistics</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-
-
-
+            <!-- Testimonial 3 -->
+            <div class="col-lg-4 col-md-12 col-12 mb-4 d-flex align-items-stretch">
+                <div class="testimonial-card d-flex flex-column justify-content-between">
+                    <div>
+                        <div class="text-warning mb-3 small">
+                            <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i>
+                        </div>
+                        <h5 class="h6 font-weight-bold text-dark mb-2">"Premium Quality finish"</h5>
+                        <p class="text-muted font-weight-normal small" style="line-height: 1.6;">B2B buyers look carefully at design-finish trends. The high-end finishes and luxurious touch-points inside these catalogs drastically accelerated our boutique market conversion ratios.</p>
+                    </div>
+                    <div class="d-flex align-items-center mt-4 border-top pt-3">
+                        <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&auto=format&fit=crop&q=80" alt="Elena Rostova" class="rounded-circle mr-3" style="width: 50px; height: 50px; object-fit: cover; flex-shrink: 0;">
+                        <div>
+                            <div class="font-weight-bold small d-flex align-items-center">Elena Rostova <span class="ml-2 verified-badge"><i class="fa fa-check-circle"></i> Elite Partner</span></div>
+                            <small class="text-muted d-block" style="font-size: 0.72rem;">Managing Partner, Moda Group Int.</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 </div>
+
+<script>
+    function scrollCarousel(carouselId, direction) {
+        const row = document.getElementById(carouselId);
+        if (!row) return;
+        
+        const scrollAmount = row.clientWidth * 0.75; 
+        if (direction === 'left') {
+            row.scrollLeft -= scrollAmount;
+        } else {
+            row.scrollLeft += scrollAmount;
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        const allCarousels = document.querySelectorAll('.carousel-row');
+        
+        allCarousels.forEach(row => {
+            let scrollInterval;
+            
+            function startAutoScroll() {
+                scrollInterval = setInterval(() => {
+                    if (row.scrollLeft + row.clientWidth >= row.scrollWidth - 5) {
+                        row.scrollTo({ left: 0, behavior: 'smooth' });
+                    } else {
+                        row.scrollBy({ left: 280, behavior: 'smooth' });
+                    }
+                }, 4000);
+            }
+
+            function stopAutoScroll() { 
+                clearInterval(scrollInterval); 
+            }
+
+            startAutoScroll();
+            row.addEventListener('mouseenter', stopAutoScroll);
+            row.addEventListener('mouseleave', startAutoScroll);
+            row.addEventListener('touchstart', stopAutoScroll, {passive: true});
+        });
+    });
+</script>
 {% endblock %}

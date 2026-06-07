@@ -57,11 +57,11 @@
             {% endif %}
 
             <a href="{% url 'store' %}" class="icon-wrap border rounded-circle text-dark d-inline-flex align-items-center justify-content-center mr-3 position-relative" style="width: 42px; height: 42px; transition: all 0.2s;" title="Browse Store">
-              <i class="fas fa-store" style="font-size: 1.1rem;"></i>
+              <i class="bi bi-shop" style="font-size: 1.1rem;"></i>
             </a>
 
             <a href="{% url 'cart' %}" class="icon-wrap border rounded-circle text-dark d-inline-flex align-items-center justify-content-center position-relative" style="width: 42px; height: 42px; transition: all 0.2s; background-color: #f8f9fa;">
-              <i class="fa fa-shopping-cart" style="font-size: 1.1rem;"></i>
+              <i class="bi bi-cart" style="font-size: 1.1rem;"></i>
               <span class="badge badge-pill badge-danger position-absolute" style="top: -6px; right: -6px; font-size: 0.7rem; min-width: 18px; height: 18px; display: flex; align-items: center; justify-content: center;">{{ cart_count }}</span>
             </a>
 
@@ -100,22 +100,24 @@
         </ul>
 
         <ul class="navbar-nav ml-auto align-items-center py-2 m-2 py-lg-0">
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle font-weight-bold text-dark text-uppercase small px-3 py-2 border rounded" href="#" id="catDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="background-color: #f8f9fa;">
-              <i class="fa fa-bars mr-1"></i> Browse Categories
-            </a>
-            <div class="dropdown-menu dropdown-menu-right border-0 shadow mt-4 align-items-center" aria-labelledby="catDropdown" style="border-radius: 8px;">
-              <a class="dropdown-item py-2 border-bottom font-weight-bold" href="{% url 'store' %}" style="font-size: 0.85rem;">
-                <i class="fas fa-th-large mr-2 text-muted"></i> All Products
-              </a>
-              {% for category in links %}
-                <a class="dropdown-item py-2" href="{{ category.get_url }}" style="font-size: 0.85rem;">
-                  {{ category.category_name }}
-                </a>
-              {% endfor %}
-            </div>
-          </li>
-        </ul>
+  <li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle font-weight-bold text-dark text-uppercase small px-3 py-2 border rounded" href="#" id="catDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="background-color: #f8f9fa;">
+      <i class="bi bi-list mr-1"></i> Browse Categories
+    </a>
+    <div class="dropdown-menu dropdown-menu-right border-0 shadow mt-4 text-center" aria-labelledby="catDropdown" style="border-radius: 8px; min-width: 180px;">
+      
+      <a class="dropdown-item py-2 border-bottom font-weight-bold d-flex justify-content-center align-items-center" href="{% url 'store' %}" style="font-size: 0.85rem;">
+        <i class="bi bi-grid mr-2 text-muted"></i> All Products
+      </a>
+      
+      {% for category in links %}
+        <a class="dropdown-item py-2" href="{{ category.get_url }}" style="font-size: 0.85rem;">
+          {{ category.category_name }}
+        </a>
+      {% endfor %}
+    </div>
+  </li>
+</ul>
 
       </div>
     </div>
