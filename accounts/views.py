@@ -13,6 +13,7 @@ from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import EmailMessage
 from carts.views import _cart_id
 from carts.models import Cart, CartItem
+from carts.models import Cart, CartItem, Enquiry
 
 
 def register(request):
@@ -380,3 +381,13 @@ def order_detail(request, order_id):
       'subtotal': subtotal,
     }
     return render(request, 'accounts/order_detail.html', context)
+
+@login_required(login_url='login')
+def my_enquiries(request):
+    # Retrieve all enquiries matching the logged-in user, newest first
+    enquiries = Enquiry.objects.filter(user=request.user).order_by('-created_at')
+    
+    context = {
+        'enquiries': enquiries,
+    }
+    return render(request, 'accounts/my_enquiries.html', context)

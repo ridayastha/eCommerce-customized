@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from store.models import Product, Variation
-from .models import Cart, CartItem
+from .models import Cart, CartItem, Enquiry
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
@@ -164,9 +164,16 @@ def enquiry_view(request):
 
     if request.method == 'POST':
         name = request.POST.get('name')
-        email = request.POST.get('email')
-        message = request.POST.get('message')
         
+        # ==================== SECURE EMAIL FALLBACK ====================
+        if request.user.is_authenticated:
+            email = request.user.email  # Overrides any user HTML alterations with session record
+        else:
+            email = request.POST.get('email')  # Safe fallback for guest profiles
+        # ===============================================================
+
+        phone_number = request.POST.get('phone_number')
+        message = request.POST.get('message')
         # Generate a random 6-digit Enquiry Reference ID
         enquiry_id = random.randint(100000, 999999)
 
@@ -180,10 +187,23 @@ def enquiry_view(request):
         else:
             cart_details = "No items in cart.\n"
 
+        # Save the enquiry to the database    
+        Enquiry.objects.create(
+            user=request.user if request.user.is_authenticated else None,
+            enquiry_id=enquiry_id,
+            name=name,
+            email=email,
+            phone_number=phone_number,
+            message=message,
+            cart_details=cart_details,
+            grand_total=context['grand_total']
+        )
+
         # Create a dictionary to pass to the success page layout
         success_context = {
             'name': name,
             'email': email,
+            'phone_number': phone_number,
             'message': message,
             'enquiry_id': enquiry_id,
             'cart_items': list(context['cart_items']) if context['cart_items'] else [], # Evaluates list before deletion
@@ -200,11 +220,12 @@ You received a new product enquiry from GreatKart.
 Customer Details:
 -----------------
 Name: {name}
-Sender: {email}
+Email: {email}
+Phone Number: {phone_number}
 
 Enquired Items:
 ---------------
-Product Name: {cart_details}
+Product: {cart_details}
 Estimated Grand Total: ${context['grand_total']}
 
 Customer Message:

@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="section-content padding-y bg">
+<div class="container">
+    <div class="row">
+        {% include 'includes/dashboard_sidebar.html' %}
+        
+        <main class="col-md-9">
+            <article class="card">
+                <header class="card-header">
+                    <strong class="d-inline-block mr-3">Your Enquiry History</strong>
+                </header>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            {% if enquiries %}
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Ref ID</th>
+                                        <th scope="col">Date Submitted</th>
+                                        <th scope="col">Items Snapshot</th>
+                                        <th scope="col">Est. Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for enquiry in enquiries %}
+                                    <tr>
+                                        <th scope="row" class="text-info">#{{ enquiry.enquiry_id }}</th>
+                                        <td>{{ enquiry.created_at|date:"M d, Y" }}</td>
+                                        <td>
+                                            <small class="text-muted">{{ enquiry.cart_details|linebreaksbr }}</small>
+                                            {% if enquiry.message %}
+                                                <div class="mt-2 bg-light p-2 rounded" style="font-style: italic;">
+                                                    <small><strong>Your Note:</strong> {{ enquiry.message }}</small>
+                                                </div>
+                                            {% endif %}
+                                        </td>
+                                        <td><strong>${{ enquiry.grand_total }}</strong></td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                            {% else %}
+                            <div class="text-center p-5">
+                                <h5 class="text-muted">You haven't submitted any product enquiries yet.</h5>
+                                <a href="{% url 'store' %}" class="btn btn-info mt-3">Browse Products</a>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </article>
+        </main>
+    </div>
+</div>
+</section>
+{% endblock %}

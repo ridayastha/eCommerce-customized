@@ -101,14 +101,15 @@
 			  <dd class="text-right text-dark b"><strong>${{grand_total}}</strong></dd>
 			</dl>
 			<hr>
-			<p class="text-center mb-3">
+			<!-- <p class="text-center mb-3">
 				<img src="{% static '/images/misc/payments.png' %}" height="26">
 			</p>
-			<a href="{% url 'checkout' %}" class="btn btn-primary btn-block"> Checkout </a>
+			<a href="{% url 'checkout' %}" class="btn btn-primary btn-block"> Checkout </a> -->
+			<a href="{% url 'enquiry' %}" class="btn btn-success mt-3 text-light btn-block"><i class="bi bi-chat-right-text-fill"></i> Make an Enquiry?</a>
 			<a href="{% url 'store' %}" class="btn btn-light btn-block">Continue Shopping</a>
+
 		</div> <!-- card-body.// -->
 		</div> <!-- card.// -->
-			<a href="{% url 'enquiry' %}" class="btn btn-success mt-3 text-light btn-block"><i class="bi bi-whatsapp"></i> Make an Enquiry?</a>
 
 
 </aside> <!-- col.// -->
