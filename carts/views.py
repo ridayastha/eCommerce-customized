@@ -234,7 +234,7 @@ def enquiry_view(request):
                 message=admin_body,
                 from_email=settings.DEFAULT_FROM_EMAIL,
                 recipient_list=['ridaya350@gmail.com'], 
-                fail_silently=False,
+                fail_silently=True,
             )
         except Exception:
             pass 
