@@ -1,6 +1,7 @@
 from pathlib import Path
 from decouple import config
 import dj_database_url
+from django.contrib.messages import constants as messages
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
@@ -141,7 +142,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR /'staticfiles'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [
      BASE_DIR / 'greatcart' / 'static',
 ]
@@ -158,21 +159,19 @@ STORAGES = {
         "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
     },
     "staticfiles": {
-        # Changed from CompressedManifestStaticFilesStorage
-        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage", 
+        # Changed to standard WhiteNoise storage to skip problematic compression phases
+        "BACKEND": "whitenoise.storage.StaticFilesStorage", 
     },
 }
 
-# Also update the fallback variable right below it
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
+# Updated fallback variable to match the standard backend configuration above
+STATICFILES_STORAGE = 'whitenoise.storage.StaticFilesStorage'
 
 # Keep this line so it ignores any remaining warnings gracefully
 WHITENOISE_MANIFEST_STRICT = False
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
-
-from django.contrib.messages import constants as messages
 
 MESSAGE_TAGS = {
     messages.ERROR: 'danger',
