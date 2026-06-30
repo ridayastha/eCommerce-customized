@@ -167,27 +167,39 @@ def enquiry_view(request):
         
         # ==================== SECURE EMAIL FALLBACK ====================
         if request.user.is_authenticated:
-            email = request.user.email  # Overrides any user HTML alterations with session record
+            email = request.user.email  
         else:
-            email = request.POST.get('email')  # Safe fallback for guest profiles
+            email = request.POST.get('email')  
         # ===============================================================
 
         phone_number = request.POST.get('phone_number')
         message = request.POST.get('message')
-        # Generate a random 6-digit Enquiry Reference ID
         enquiry_id = random.randint(100000, 999999)
 
-        # Format cart details for your admin notification email body
+        # 1. Snapshot the cart items into safe data strings BEFORE deletion
         cart_details = ""
+        static_cart_list = []
+        
         if context['cart_items']:
             for item in context['cart_items']:
+                # Pull the actual string data out of database relations
                 variations = ", ".join([v.variation_value for v in item.variations.all()])
                 var_str = f" ({variations})" if variations else ""
+                
+                # Append to the string body used for email
                 cart_details += f"- {item.product.product_name}{var_str} x {item.quantity}\n"
+                
+                # Build a safe dictionary structure immune to database purging
+                static_cart_list.append({
+                    'product_name': item.product.product_name,
+                    'price': item.product.price,
+                    'quantity': item.quantity,
+                    'variations': variations
+                })
         else:
             cart_details = "No items in cart.\n"
 
-        # Save the enquiry to the database    
+        # 2. Save the enquiry to the database    
         Enquiry.objects.create(
             user=request.user if request.user.is_authenticated else None,
             enquiry_id=enquiry_id,
@@ -199,14 +211,14 @@ def enquiry_view(request):
             grand_total=context['grand_total']
         )
 
-        # Create a dictionary to pass to the success page layout
+        # 3. Use the static data list for your context variables
         success_context = {
             'name': name,
             'email': email,
             'phone_number': phone_number,
             'message': message,
             'enquiry_id': enquiry_id,
-            'cart_items': list(context['cart_items']) if context['cart_items'] else [], # Evaluates list before deletion
+            'cart_items': static_cart_list, # Clean dictionary list
             'total': context['total'],
             'tax': context['tax'],
             'grand_total': context['grand_total'],
@@ -225,7 +237,7 @@ Phone Number: {phone_number}
 
 Enquired Items:
 ---------------
-Product: {cart_details}
+{cart_details}
 Estimated Grand Total: ${context['grand_total']}
 
 Customer Message:
@@ -234,7 +246,6 @@ Customer Message:
 """
 
         try:
-            # Send the email to you
             send_mail(
                 subject=admin_subject,
                 message=admin_body,
@@ -243,13 +254,13 @@ Customer Message:
                 fail_silently=False,
             )
         except Exception:
-            pass # Form page will still load even if your SMTP settings aren't live yet
+            pass 
 
-        # --- Clear out the database cart objects ---
+        # 4. Now that data is safely cached in success_context, clear the database cart
         if context['cart_items']:
             context['cart_items'].delete()
 
-        # Render the custom invoice success page directly
+        # Render the template safely
         return render(request, 'orders/enquiry_success.html', success_context)
 
     return render(request, 'store/enquiry_form.html', context)

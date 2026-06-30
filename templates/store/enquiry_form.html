@@ -48,21 +48,21 @@
                 <h5 class="card-title">Enquiring About These Items</h5>
                 <hr>
                 {% for cart_item in cart_items %}
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <div>
-                        <p class="mb-0 font-weight-bold">{{ cart_item.product.product_name }}</p>
-                        <small class="text-muted">
-                            Qty: {{ cart_item.quantity }} 
-                            {% if cart_item.variations.all %}
-                                | {% for item in cart_item.variations.all %}{{ item.variation_value }} {% endfor %}
-                            {% endif %}
-                        </small>
-                    </div>
-                    <span class="text-muted">${{ cart_item.product.price }}</span>
-                </div>
-                {% empty %}
-                <p class="text-muted">Your cart is currently empty.</p>
-                {% endfor %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <p class="mb-0 font-weight-bold">{{ cart_item.product_name }}</p>
+        <small class="text-muted">
+            Qty: {{ cart_item.quantity }} 
+            {% if cart_item.variations %}
+                | {{ cart_item.variations }}
+            {% endif %}
+        </small>
+    </div>
+    <span class="text-muted">${{ cart_item.price }}</span>
+</div>
+{% empty %}
+<p class="text-muted">No items found.</p>
+{% endfor %}
                 <hr>
                 <div class="d-flex justify-content-between">
                     <strong>Estimated Total:</strong>
