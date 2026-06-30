@@ -14,13 +14,15 @@
     <div class="container">
       <div class="row align-items-center">
         
-        <div class="col-lg-2 col-md-3 col-6">
+        <!-- Logo: Takes half the row on mobile -->
+        <div class="col-lg-2 col-md-4 col-5">
           <a href="{% url 'home' %}" class="brand-wrap">
             <img class="logo" src="{% static './images/supriya.jpeg' %}" style="height: 65px; max-height: 65px; object-fit: contain;">
           </a>
         </div>
 
-        <div class="col-lg-6 col-md-6 col-sm-12 col-12 order-3 order-lg-2 mt-3 mt-lg-0">
+        <!-- Search Bar: Shifts to full-width on mobile below the logo/icons row -->
+        <div class="col-lg-6 col-md-12 col-12 order-3 order-lg-2 mt-3 mt-lg-0">
           <form action="{% url 'search' %}" class="search" method="GET">
             <div class="input-group w-100 border overflow-hidden bg-light" style="border-color: #dee2e6 !important;">
               <input type="text" class="form-control border-0 bg-transparent px-4" placeholder="Search premium items, brands, trends..." name="keyword" required style="box-shadow: none;">
@@ -33,34 +35,48 @@
           </form>
         </div>
 
-        <div class="col-lg-4 col-md-3 col-6 order-2 order-lg-3">
+        <!-- Right Side Icons: Consolidated to col-7 on mobile to remain on the same line -->
+        <div class="col-lg-4 col-md-8 col-7 order-2 order-lg-3">
           <div class="d-flex justify-content-end align-items-center">
             
+            <!-- Auth Section -->
             {% if user.id is None %}
-            <div class="widget-header text-right mr-3 small">
-              <span class="text-muted d-block" style="font-size: 0.75rem;">Welcome Guest</span>
-              <div>
-                <a href="{% url 'login' %}" class="font-weight-bold text-dark text-decoration-none">Sign In</a> 
-                <span class="text-muted px-1">|</span>
-                <a href="{% url 'register' %}" class="text-muted text-decoration-none">Register</a>
+              <!-- Desktop/Tablet Text Display -->
+              <div class="widget-header text-right mr-2 mr-md-3 small d-none d-sm-block">
+                <span class="text-muted d-block" style="font-size: 0.75rem; white-space: nowrap;">Welcome Guest</span>
+                <div style="white-space: nowrap;">
+                  <a href="{% url 'login' %}" class="font-weight-bold text-dark text-decoration-none">Sign In</a> 
+                  <span class="text-muted px-1">|</span>
+                  <a href="{% url 'register' %}" class="text-muted text-decoration-none">Register</a>
+                </div>
               </div>
-            </div>
+              <!-- Mobile Profile Icon Alternative (Keeps things on one line) -->
+              <a href="{% url 'login' %}" class="icon-wrap border rounded-circle text-dark d-inline-flex d-sm-none align-items-center justify-content-center mr-2 position-relative" style="width: 42px; height: 42px; min-width: 42px;" title="Sign In">
+                <i class="bi bi-person" style="font-size: 1.1rem;"></i>
+              </a>
             {% else %}
-            <div class="widget-header text-right mr-3 small">
-              <span class="text-muted d-block" style="font-size: 0.75rem;">Welcome, {{ user.first_name }}!</span>
-              <div>
-                <a href="{% url 'dashboard' %}" class="font-weight-bold text-dark text-decoration-none">Dashboard</a> 
-                <span class="text-muted px-1">|</span>
-                <a href="{% url 'logout' %}" class="text-danger text-decoration-none">Logout</a>
+              <!-- Desktop/Tablet Text Display -->
+              <div class="widget-header text-right mr-2 mr-md-3 small d-none d-sm-block">
+                <span class="text-muted d-block" style="font-size: 0.75rem; white-space: nowrap;">Welcome, {{ user.first_name }}!</span>
+                <div style="white-space: nowrap;">
+                  <a href="{% url 'dashboard' %}" class="font-weight-bold text-dark text-decoration-none">Dashboard</a> 
+                  <span class="text-muted px-1">|</span>
+                  <a href="{% url 'logout' %}" class="text-danger text-decoration-none">Logout</a>
+                </div>
               </div>
-            </div>
+              <!-- Mobile Profile Icon Alternative -->
+              <a href="{% url 'dashboard' %}" class="icon-wrap border rounded-circle text-dark d-inline-flex d-sm-none align-items-center justify-content-center mr-2 position-relative" style="width: 42px; height: 42px; min-width: 42px;" title="Dashboard">
+                <i class="bi bi-person-check text-success" style="font-size: 1.1rem;"></i>
+              </a>
             {% endif %}
 
-            <a href="{% url 'store' %}" class="icon-wrap border rounded-circle text-dark d-inline-flex align-items-center justify-content-center mr-3 position-relative" style="width: 42px; height: 42px; transition: all 0.2s;" title="Browse Store">
+            <!-- Store Icon Button -->
+            <a href="{% url 'store' %}" class="icon-wrap border rounded-circle text-dark d-inline-flex align-items-center justify-content-center mr-2 mr-md-3 position-relative" style="width: 42px; height: 42px; min-width: 42px; transition: all 0.2s;" title="Browse Store">
               <i class="bi bi-shop" style="font-size: 1.1rem;"></i>
             </a>
 
-            <a href="{% url 'cart' %}" class="icon-wrap border rounded-circle text-dark d-inline-flex align-items-center justify-content-center position-relative" style="width: 42px; height: 42px; transition: all 0.2s; background-color: #f8f9fa;">
+            <!-- Cart Icon Button -->
+            <a href="{% url 'cart' %}" class="icon-wrap border rounded-circle text-dark d-inline-flex align-items-center justify-content-center position-relative" style="width: 42px; height: 42px; min-width: 42px; transition: all 0.2s; background-color: #f8f9fa;">
               <i class="bi bi-cart" style="font-size: 1.1rem;"></i>
               <span class="badge badge-pill badge-danger position-absolute" style="top: -6px; right: -6px; font-size: 0.7rem; min-width: 18px; height: 18px; display: flex; align-items: center; justify-content: center;">{{ cart_count }}</span>
             </a>
@@ -75,22 +91,19 @@
   <nav class="navbar navbar-expand-lg navbar-light bg-white py-0 border-bottom">
     <div class="container">
       
-      <button class="navbar-toggler my-2" type="button" data-toggle="collapse" data-target="#store_nav" aria-controls="store_nav" aria-expanded="false" aria-label="Toggle Navigation">
+      <button class="navbar-toggler my-2 ml-auto" type="button" data-toggle="collapse" data-target="#store_nav" aria-controls="store_nav" aria-expanded="false" aria-label="Toggle Navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
 
       <div class="collapse navbar-collapse" id="store_nav">
-        <!-- Part A: Dynamic Core Target Demographic Gender Hub Paths -->
         <ul class="navbar-nav align-items-center">
           {% for gender in available_genders %}
             <li class="nav-item">
-              <!-- href passes the slug value ('men', 'unisex'), title filter makes it display beautifully as ('Men', 'Unisex') -->
               <a class="nav-link font-weight-bold px-3 text-dark text-uppercase small" style="letter-spacing: 0.5px;" href="{% url 'store' %}?gender={{ gender }}">
                 {% if gender == 'unisex' %}Unisex{% else %}{{ gender|title }}{% endif %}
               </a>
             </li>
           {% empty %}
-            <!-- Fallback if there are absolutely no products on the site yet -->
             <li class="nav-item">
               <a class="nav-link font-weight-bold px-3 text-muted text-uppercase small" style="letter-spacing: 0.5px;" href="{% url 'store' %}">Shop All</a>
             </li>
@@ -100,24 +113,22 @@
         </ul>
 
         <ul class="navbar-nav ml-auto align-items-center py-2 m-2 py-lg-0">
-  <li class="nav-item dropdown">
-    <a class="nav-link dropdown-toggle font-weight-bold text-dark text-uppercase small px-3 py-2 border rounded" href="#" id="catDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="background-color: #f8f9fa;">
-      <i class="bi bi-list mr-1"></i> Browse Categories
-    </a>
-    <div class="dropdown-menu dropdown-menu-right border-0 shadow mt-4 text-center" aria-labelledby="catDropdown" style="border-radius: 8px; min-width: 180px;">
-      
-      <a class="dropdown-item py-2 border-bottom font-weight-bold d-flex justify-content-center align-items-center" href="{% url 'store' %}" style="font-size: 0.85rem;">
-        <i class="bi bi-grid mr-2 text-muted"></i> All Products
-      </a>
-      
-      {% for category in links %}
-        <a class="dropdown-item py-2" href="{{ category.get_url }}" style="font-size: 0.85rem;">
-          {{ category.category_name }}
-        </a>
-      {% endfor %}
-    </div>
-  </li>
-</ul>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle font-weight-bold text-dark text-uppercase small px-3 py-2 border rounded" href="#" id="catDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="background-color: #f8f9fa;">
+              <i class="bi bi-list mr-1"></i> Browse Categories
+            </a>
+            <div class="dropdown-menu dropdown-menu-right border-0 shadow mt-4 text-center" aria-labelledby="catDropdown" style="border-radius: 8px; min-width: 180px;">
+              <a class="dropdown-item py-2 border-bottom font-weight-bold d-flex justify-content-center align-items-center" href="{% url 'store' %}" style="font-size: 0.85rem;">
+                <i class="bi bi-grid mr-2 text-muted"></i> All Products
+              </a>
+              {% for category in links %}
+                <a class="dropdown-item py-2" href="{{ category.get_url }}" style="font-size: 0.85rem;">
+                  {{ category.category_name }}
+                </a>
+              {% endfor %}
+            </div>
+          </li>
+        </ul>
 
       </div>
     </div>
