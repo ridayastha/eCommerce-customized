@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
 from django.conf import settings
 from django.contrib import messages
+from decimal import Decimal
 import random
 
 
@@ -157,39 +158,36 @@ def checkout(request):
     context = _get_cart_data(request)
     return render(request, 'store/checkout.html', context)
 
-import random
+
 
 def enquiry_view(request):
     context = _get_cart_data(request)
 
     if request.method == 'POST':
-        name = request.POST.get('name')
+        # Provide string fallbacks to prevent NULL type conflicts
+        name = request.POST.get('name', '') or ''
+        phone_number = request.POST.get('phone_number', '') or ''
+        message = request.POST.get('message', '') or ''
         
-        # ==================== SECURE EMAIL FALLBACK ====================
+        # Safe Email Fallback
         if request.user.is_authenticated:
-            email = request.user.email  
+            email = getattr(request.user, 'email', '') or ''
         else:
-            email = request.POST.get('email')  
-        # ===============================================================
+            email = request.POST.get('email', '') or ''
 
-        phone_number = request.POST.get('phone_number')
-        message = request.POST.get('message')
-        enquiry_id = random.randint(100000, 999999)
+        enquiry_id = str(random.randint(100000, 999999))
 
-        # 1. Snapshot the cart items into safe data strings BEFORE deletion
+        # Snapshot cart content strings
         cart_details = ""
         static_cart_list = []
         
         if context['cart_items']:
             for item in context['cart_items']:
-                # Pull the actual string data out of database relations
                 variations = ", ".join([v.variation_value for v in item.variations.all()])
                 var_str = f" ({variations})" if variations else ""
                 
-                # Append to the string body used for email
                 cart_details += f"- {item.product.product_name}{var_str} x {item.quantity}\n"
                 
-                # Build a safe dictionary structure immune to database purging
                 static_cart_list.append({
                     'product_name': item.product.product_name,
                     'price': item.product.price,
@@ -199,7 +197,10 @@ def enquiry_view(request):
         else:
             cart_details = "No items in cart.\n"
 
-        # 2. Save the enquiry to the database    
+        # Safe Money Float-to-Decimal conversion for strict PostgreSQL tables
+        safe_grand_total = Decimal(str(context['grand_total']))
+
+        # Save the enquiry safely to the database    
         Enquiry.objects.create(
             user=request.user if request.user.is_authenticated else None,
             enquiry_id=enquiry_id,
@@ -208,42 +209,24 @@ def enquiry_view(request):
             phone_number=phone_number,
             message=message,
             cart_details=cart_details,
-            grand_total=context['grand_total']
+            grand_total=safe_grand_total # Wrapped Decimal value
         )
 
-        # 3. Use the static data list for your context variables
         success_context = {
             'name': name,
             'email': email,
             'phone_number': phone_number,
             'message': message,
             'enquiry_id': enquiry_id,
-            'cart_items': static_cart_list, # Clean dictionary list
+            'cart_items': static_cart_list, 
             'total': context['total'],
             'tax': context['tax'],
             'grand_total': context['grand_total'],
         }
 
-        # --- Plain Text Email Sent ONLY to Admin ---
+        # --- Email Admin Notification ---
         admin_subject = f"New Store Enquiry #{enquiry_id} from {name}"
-        admin_body = f"""
-You received a new product enquiry from GreatKart.
-
-Customer Details:
------------------
-Name: {name}
-Email: {email}
-Phone Number: {phone_number}
-
-Enquired Items:
----------------
-{cart_details}
-Estimated Grand Total: ${context['grand_total']}
-
-Customer Message:
------------------
-{message}
-"""
+        admin_body = f"Customer: {name}\nEmail: {email}\nPhone: {phone_number}\n\nItems:\n{cart_details}\nTotal: ${context['grand_total']}\n\nMessage:\n{message}"
 
         try:
             send_mail(
@@ -256,11 +239,10 @@ Customer Message:
         except Exception:
             pass 
 
-        # 4. Now that data is safely cached in success_context, clear the database cart
+        # Clear active cart objects after recording it in the database
         if context['cart_items']:
             context['cart_items'].delete()
 
-        # Render the template safely
         return render(request, 'orders/enquiry_success.html', success_context)
 
     return render(request, 'store/enquiry_form.html', context)
