@@ -21,22 +21,29 @@ ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1').split(','
 # Application definition
 
 INSTALLED_APPS = [
+    # 1. Cloudinary storage MUST go right before staticfiles
+    'cloudinary_storage',
+    'django.contrib.staticfiles',
+    'cloudinary',
+    
+    # 2. Django Core Apps
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles',
+    
+    # 3. Third-Party Apps
+    'django_extensions',
+    
+    # 4. Your Custom Apps
     'category',
     'accounts',
     'store',
     'carts',
     'orders',
     'blog',
-    # 'admin_honeypot',
-    'django_extensions'
 ]
-
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -136,10 +143,17 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR /'staticfiles'
 STATICFILES_DIRS = [
-     'greatcart/static',
+     BASE_DIR / 'greatcart/static',
 ]
 
-# media file configuration
+# Cloudinary Media File Storage Configuration
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': config('CLOUDINARY_CLOUD_NAME'),
+    'API_KEY': config('CLOUDINARY_API_KEY'),
+    'API_SECRET': config('CLOUDINARY_API_SECRET'),
+}
+
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
