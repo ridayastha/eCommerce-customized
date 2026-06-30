@@ -158,13 +158,15 @@ STORAGES = {
         "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
     },
     "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        # Changed from CompressedManifestStaticFilesStorage
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage", 
     },
 }
 
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+# Also update the fallback variable right below it
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 
+# Keep this line so it ignores any remaining warnings gracefully
 WHITENOISE_MANIFEST_STRICT = False
 
 MEDIA_URL = '/media/'
