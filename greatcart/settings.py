@@ -22,9 +22,9 @@ ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1').split(','
 # Application definition
 
 INSTALLED_APPS = [
+    'django.contrib.staticfiles', 
     # 1. Cloudinary storage MUST go right before staticfiles
     'cloudinary_storage',
-    'django.contrib.staticfiles',  # Keep this one here!
     'cloudinary',
     
     # 2. Django Core Apps (Remove the second staticfiles from this group)
@@ -159,7 +159,6 @@ STORAGES = {
         "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
     },
     "staticfiles": {
-        # Changed to standard WhiteNoise storage to skip problematic compression phases
         "BACKEND": "whitenoise.storage.StaticFilesStorage", 
     },
 }
