@@ -19,13 +19,17 @@
                         </div>
                         <div class="col form-group">
                             <label>Email Address</label>
+                            {% if request.user.is_authenticated %}
                             <input type="email" name="email" class="form-control bg-light" required value="{{ request.user.email }}" readonly>
-                            </div>
+                            {% else %}
+                            <input type="email" name="email" class="form-control" placeholder="example@email.com" required>
+                            {% endif %}
+                        </div>
                     </div>
                     
                     <div class="form-group">
                         <label>Phone Number <span class="text-danger">*</span></label>
-                        <input type="tel" name="phone_number" class="form-control" placeholder="e.g. +1234567890" required value="{{ request.user.phone_number }}">
+                        <input type="tel" name="phone_number" class="form-control" placeholder="e.g. +1234567890" required value="{% if request.user.phone_number %}{{ request.user.phone_number }}{% endif %}">
                     </div>
                     <div class="form-group">
                         <label>Your Message / Question</label>
